@@ -1,0 +1,153 @@
+/*!
+ * Start Bootstrap - Freelancer Bootstrap Theme (http://startbootstrap.com)
+ * Code licensed under the Apache License v2.0.
+ * For details, see http://www.apache.org/licenses/LICENSE-2.0.
+ */
+
+// jQuery for page scrolling feature - requires jQuery Easing plugin
+$(function() {
+    $('body').on('click', '.page-scroll a', function(event) {
+        var $anchor = $(this);
+        $('html, body').stop().animate({
+            scrollTop: $($anchor.attr('href')).offset().top
+        }, 1500, 'easeInOutExpo');
+        event.preventDefault();
+    });
+});
+
+// Floating label headings for the contact form
+$(function() {
+    $("body").on("input propertychange", ".floating-label-form-group", function(e) {
+        $(this).toggleClass("floating-label-form-group-with-value", !! $(e.target).val());
+    }).on("focus", ".floating-label-form-group", function() {
+        $(this).addClass("floating-label-form-group-with-focus");
+    }).on("blur", ".floating-label-form-group", function() {
+        $(this).removeClass("floating-label-form-group-with-focus");
+    });
+});
+
+// Highlight the top nav as scrolling occurs
+$('body').scrollspy({
+    target: '.navbar-fixed-top'
+})
+
+// Closes the Responsive Menu on Menu Item Click
+$('.navbar-collapse ul li a').click(function() {
+    $('.navbar-toggle:visible').click();
+});
+
+$(function() {
+    var engine = new Bloodhound({
+        remote: {
+	url:'/query/%QUERY'
+	},
+        filter: function (users) {
+            // Map the remote source JSON array to a JavaScript object array
+            return $.map(users, function (user) {
+                return {
+                    value: user
+                };
+            });
+        },
+        // '...' = displayKey: '...'
+        datumTokenizer: function (datum) {
+        	return Bloodhound.tokenizers.whitespace(datum.value);
+    	},
+        queryTokenizer: Bloodhound.tokenizers.whitespace
+    });
+
+    engine.initialize();
+
+    $("#users").typeahead({
+        hint: false,
+        highlight: true,
+        minLength: 2
+    }, {
+        source: engine.ttAdapter(),
+        // This will be appended to "tt-dataset-" to form the class name of the suggestion menu.
+        name: 'User_list',
+        // the key from the array we want to display (name,id,email,etc...)
+        displayKey: 'phone',
+        templates: {
+            empty: [
+                '<div class="empty-message">Нет такого номера</div>'
+            ],
+	    suggestion: function (user) {
+                return user.name+', телефон: '+user.phone;
+            }
+	    
+        }
+    }).on('typeahead:selected', function(e, data) {
+      $('#seachShow').submit();
+    });
+});
+
+$('.mctalk').click(function() {
+  $('.mctalk').each(function() {
+    if (this.paused == false) {
+      this.pause();
+    }
+  });
+  if (this.paused == false) {
+      this.pause();
+  } else {
+      this.play();
+  }
+});
+
+var audio;
+var playlist;
+var tracks;
+var current;
+
+init();
+function init(){
+    current = 0;
+    audio = $('#audio');
+    playlist = $('#playlist');
+    tracks = playlist.find('li a');
+    len = tracks.length - 1;
+    audio[0].volume = .40;
+    audio[0].pause();
+    playlist.find('a').click(function(e){
+        e.preventDefault();
+        link = $(this);
+        current = link.parent().index();
+        run(link, audio[0]);
+    });
+    audio[0].addEventListener('ended',function(e){
+        current++;
+        if(current == len){
+            current = 0;
+            link = playlist.find('a')[0];
+        }else{
+            link = playlist.find('a')[current];    
+        }
+        run($(link),audio[0]);
+    });
+}
+function run(link, player){
+        player.src = link.attr('href');
+        par = link.parent();
+        par.addClass('active').siblings().removeClass('active');
+        audio[0].load();
+        audio[0].play();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
